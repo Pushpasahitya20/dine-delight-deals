@@ -251,5 +251,25 @@ const GameDetails = ({ game }: { game: any }) => {
     </div>
   );
 };
+// fetch("http://localhost/restaurant/bookingfor8ball.php", {
+//   method: "POST",
+//   headers: {
+//     "Content-Type": "application/json"
+//   },
+//   body: JSON.stringify({
+//     full_name: "John Doe",
+//     email: "john@example.com",
+//     booking_date: "2025-07-18",
+//     booking_time: "17:30:00"
+//   })
+// })
+//   .then(response => response.json())
+//   .then(data => {
+//     console.log("Response from PHP:", data);
+//   })
+//   .catch(error => {
+//     console.error("Error:", error);
+//   });
+
 
 export default Games;

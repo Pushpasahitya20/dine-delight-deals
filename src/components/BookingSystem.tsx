@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Users, Gamepad2, Percent } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 interface BookingSystemProps {
   type: 'table' | 'game';
@@ -18,6 +19,7 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
   const [guests, setGuests] = useState('2');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const tableId = 1
   const { toast } = useToast();
 
   const calculateDiscount = () => {
@@ -48,32 +50,97 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
     return Math.min(discount, 25); // Cap at 25% total discount
   };
 
-  const handleBooking = () => {
-    if (!selectedDate || !selectedTime || !name || !email) {
+  const handleBooking = async () => {
+  if (!selectedDate || !selectedTime || !name || !email) {
+    toast({
+      title: "Missing Information",
+      description: "Please fill in all required fields.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  const discount = calculateDiscount();
+  const bookingType = type === 'table' 
+    ? 'Table' 
+    : `${gameType?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Game`;
+
+  const apiURL = type === 'table'
+    ? 'http://localhost/restaurant/book_table.php'
+    : 'http://localhost/restaurant/api/game-booking.php';
+
+  const postData = type === 'table'
+    ? {
+        booking_date: selectedDate,
+        booking_time: selectedTime,
+        guests: guests || 2,
+        full_name: name,
+        email: email,
+        discount: `${discount}%`,
+        table_id: 1
+      }
+    : {
+        booking_date: selectedDate,
+        booking_time: selectedTime,
+        full_name: name,
+        email: email,
+        game_type: gameType,
+        discount: `${discount}%`
+      };
+
+  try {
+    const response = await axios.post(apiURL, postData);
+    if (response.data.success) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Booking Confirmed!",
+        description: `Your ${bookingType} booking for ${selectedDate} at ${selectedTime} has been confirmed${discount > 0 ? ` with ${discount}% discount!` : '!'}`,
+        variant: "default"
+      });
+
+      // Reset form
+      setSelectedDate('');
+      setSelectedTime('');
+      setGuests('2');
+      setName('');
+      setEmail('');
+    } else {
+      toast({
+        title: "Booking Failed",
+        description: response.data.message || "Something went wrong.",
         variant: "destructive"
       });
-      return;
     }
-
-    const discount = calculateDiscount();
-    const bookingType = type === 'table' ? 'Table' : `${gameType?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Game`;
-    
+  } catch (error) {
     toast({
-      title: "Booking Confirmed!",
-      description: `Your ${bookingType} booking for ${selectedDate} at ${selectedTime} has been confirmed${discount > 0 ? ` with ${discount}% discount!` : '!'}`,
-      variant: "default"
+      title: "Server Error",
+      description: "Failed to submit booking. Please try again later.",
+      variant: "destructive"
     });
-    
-    // Reset form
-    setSelectedDate('');
-    setSelectedTime('');
-    setGuests('2');
-    setName('');
-    setEmail('');
+    console.error("API Error:", error);
+  }
+};
+
+
+  const handleBooking1 = async () => {
+  const bookingData = {
+    booking_date: selectedDate,
+    booking_time: selectedTime,
+    guests,
+    full_name: name,
+    email,
+    discount: discount.toString(), // Optional, convert to string for PHP safety
+    table_id: tableId
   };
+
+  try {
+    const res = await axios.post('http://localhost/restaurant/book_table.php', bookingData);
+    alert(res.data.message); // or use a toast/snackbar
+  } catch (error) {
+    console.error("Booking failed:", error);
+    alert("Something went wrong while booking.");
+  }
+};
+
 
   const discount = calculateDiscount();
 
@@ -190,7 +257,7 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
           className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
           size="lg"
         >
-          Confirm Booking
+          Confirm Booking 1
           {discount > 0 && (
             <Badge className="ml-2 bg-success text-success-foreground">
               -{discount}%

@@ -11,7 +11,8 @@ import {
   ChefHat, 
   MapPin, 
   Phone,
-  Mail
+  Mail,
+  Link
 } from 'lucide-react';
 
 const About = () => {
@@ -257,7 +258,65 @@ const About = () => {
           </div>
         </div>
       </section>
+       <footer className="bg-foreground text-background py-12">
+              <div className="container mx-auto px-4">
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="font-bold text-lg mb-4">Savory Haven</h3>
+                    <p className="text-background/80 mb-4">
+                      Experience culinary excellence in a warm, welcoming atmosphere.
+                    </p>
+                    <div className="flex items-center gap-2 text-background/80">
+                      <Award className="w-4 h-4" />
+                      <span>Award-winning cuisine since 2020</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-bold text-lg mb-4">Contact Info</h3>
+                    <div className="space-y-2 text-background/80">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4" />
+                        <span>(555) 123-4567</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>123 Culinary Street, Food City</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>Mon-Sun: 10:00 AM - 10:00 PM</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-bold text-lg mb-4">Quick Links</h3>
+                    <div className="space-y-2">
+                      <Link to="/menu" className="block text-background/80 hover:text-background">
+                        Menu
+                      </Link>
+                      <Link to="/book-table" className="block text-background/80 hover:text-background">
+                        Book Table
+                      </Link>
+                      <Link to="/games" className="block text-background/80 hover:text-background">
+                        Games
+                      </Link>
+                      <Link to="/about" className="block text-background/80 hover:text-background">
+                        About Us
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-t border-background/20 mt-8 pt-8 text-center text-background/60">
+                  <p>&copy; 2024 Savory Haven. All rights reserved.</p>
+                </div>
+              </div>
+            </footer>
+      
     </div>
+    
   );
 };
 

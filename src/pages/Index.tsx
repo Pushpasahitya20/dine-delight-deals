@@ -81,13 +81,13 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/menu">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Star className="w-5 h-5 mr-2" />
+              <Button size="lg"  variant="outline" className="bg-primary hover:bg-primary/90 text-primary-foreground 		hover:text-neutral-200" >
+                <Star className="w-5 h-5 mr-1" />
                 Explore Menu
               </Button>
             </Link>
             <Link to="/book-table">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+              <Button size="lg" variant="outline" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Calendar className="w-5 h-5 mr-2" />
                 Book Table
               </Button>
