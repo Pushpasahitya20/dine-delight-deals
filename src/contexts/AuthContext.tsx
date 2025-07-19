@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (fullName: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -50,6 +51,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const register = async (fullName: string, email: string, password: string) => {
+    setLoading(true);
+    try {
+      // Mock registration - replace with your backend integration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newUser: User = {
+        id: Date.now().toString(),
+        name: fullName,
+        email,
+        isAdmin: false
+      };
+      
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -60,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       isAuthenticated: !!user,
       login,
+      register,
       logout,
       loading
     }}>

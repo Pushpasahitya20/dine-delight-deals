@@ -10,6 +10,7 @@ import BookTable from "./pages/BookTable";
 import Games from "./pages/Games";
 import About from "./pages/About";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import MyBookings from "./pages/MyBookings";
 import Orders from "./pages/Orders";
 import AdminMenu from "./pages/AdminMenu";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/games" element={<Games />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/admin/menu" element={<AdminMenu />} />

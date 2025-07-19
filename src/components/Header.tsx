@@ -74,12 +74,19 @@ export const Header = () => {
                 </Button>
               </div>
             ) : (
-              <Link to="/login" className="ml-4">
-                <Button variant="outline" size="sm">
-                  <User className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
+              <div className="flex items-center space-x-2 ml-4">
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">
+                    Register
+                  </Button>
+                </Link>
+              </div>
             )}
           </nav>
 
@@ -163,12 +170,19 @@ export const Header = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full justify-start">
-                    <User className="w-4 h-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
+                <div className="space-y-2 border-t pt-2 mt-2">
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full justify-start">
+                      <User className="w-4 h-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full justify-start">
+                      Register
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </nav>
