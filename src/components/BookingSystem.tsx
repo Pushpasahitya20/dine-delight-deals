@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Users, Gamepad2, Percent } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
 
 interface BookingSystemProps {
@@ -21,6 +23,9 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
   const [email, setEmail] = useState('');
   const tableId = 1
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const calculateDiscount = () => {
     if (!selectedDate || !selectedTime) return 0;
@@ -51,6 +56,16 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
   };
 
   const handleBooking = async () => {
+  if (!isAuthenticated) {
+    toast({
+      title: "Login Required",
+      description: "Please login first to make a booking.",
+      variant: "destructive",
+    });
+    navigate('/login', { state: { from: location } });
+    return;
+  }
+
   if (!selectedDate || !selectedTime || !name || !email) {
     toast({
       title: "Missing Information",

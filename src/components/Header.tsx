@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Clock, Star, Calendar, Gamepad2 } from 'lucide-react';
+import { Menu, X, Clock, Star, Calendar, Gamepad2, User, BookOpen, UtensilsCrossed, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navigation = [
     { name: 'Home', href: '/', icon: null },
@@ -12,6 +14,15 @@ export const Header = () => {
     { name: 'Book Table', href: '/book-table', icon: Calendar },
     { name: 'Games', href: '/games', icon: Gamepad2 },
     { name: 'About', href: '/about', icon: null },
+  ];
+
+  const userNavigation = [
+    { name: 'My Bookings', href: '/my-bookings', icon: BookOpen },
+    { name: 'My Orders', href: '/orders', icon: UtensilsCrossed },
+  ];
+
+  const adminNavigation = [
+    { name: 'Manage Menu', href: '/admin/menu', icon: Star },
   ];
 
   return (
@@ -36,6 +47,40 @@ export const Header = () => {
                 </Button>
               </Link>
             ))}
+            
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-1 ml-4 border-l pl-4">
+                {userNavigation.map((item) => (
+                  <Link key={item.name} to={item.href}>
+                    <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
+                      <item.icon className="w-4 h-4 mr-2" />
+                      {item.name}
+                    </Button>
+                  </Link>
+                ))}
+                
+                {user?.isAdmin && adminNavigation.map((item) => (
+                  <Link key={item.name} to={item.href}>
+                    <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
+                      <item.icon className="w-4 h-4 mr-2" />
+                      {item.name}
+                    </Button>
+                  </Link>
+                ))}
+                
+                <Button variant="ghost" size="sm" onClick={logout} className="text-foreground hover:text-primary">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Link to="/login" className="ml-4">
+                <Button variant="outline" size="sm">
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              </Link>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -68,6 +113,63 @@ export const Header = () => {
                   </Button>
                 </Link>
               ))}
+              
+              {isAuthenticated ? (
+                <>
+                  <div className="border-t pt-2 mt-2">
+                    {userNavigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-foreground hover:text-primary"
+                        >
+                          <item.icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Button>
+                      </Link>
+                    ))}
+                    
+                    {user?.isAdmin && adminNavigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-foreground hover:text-primary"
+                        >
+                          <item.icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Button>
+                      </Link>
+                    ))}
+                    
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full justify-start text-foreground hover:text-primary"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" className="w-full justify-start">
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </nav>
         )}
