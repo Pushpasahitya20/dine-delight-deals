@@ -113,63 +113,69 @@ const AdminMenu = () => {
   }
 
   try {
-  const token = localStorage.getItem("token"); 
+  const token = localStorage.getItem("token");
 
-const response = await axios.post('http://localhost/restaurant/add_menu_item.php', {
-  name: newItem.name,
-  description: newItem.description,
-  price: newItem.price,
-  category: newItem.category,
-  image_url: newItem.image,
-  isAvailable: newItem.isAvailable
-}, {
-  headers: {
-    // 'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
-  }
-});
-
-
-    if (response.data.success) {
-      const addedItem: MenuItem = {
-        id: Date.now().toString(), // Replace with real ID if backend returns it
-        ...newItem,
-        rating: 0
-      };
-
-      setMenuItems([...menuItems, addedItem]);
-      setNewItem({
-        name: '',
-        description: '',
-        price: 0,
-        category: '',
-        image: '',
-        rating: 0,
-        votes: 0,
-        isVegetarian: false,
-        isSpicy: false,
-        isAvailable: true
-      });
-      setIsAddDialogOpen(false);
-
-      toast({
-        title: "Success",
-        description: "Menu item added successfully!",
-      });
-    } else {
-      toast({
-        title: "Error",
-        description: response.data.error || "Failed to add item",
-        variant: "destructive",
-      });
+  const response = await axios.post(
+    "http://localhost/restaurant/add_menu_item.php",
+    {
+      name: newItem.name,
+      description: newItem.description,
+      price: newItem.price,
+      category: newItem.category,
+      image: newItem.image, // ✅ now matches PHP field
+      isVegetarian: newItem.isVegetarian,
+      isSpicy: newItem.isSpicy,
+      votes: newItem.votes || 0 // optional
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
-  } catch (err: any) {
+  );
+
+  if (response.data.success) {
+    const addedItem: MenuItem = {
+      id: Date.now().toString(), // replace with actual ID if returned
+      ...newItem,
+      rating: 0,
+      votes: newItem.votes || 0,
+    };
+
+    setMenuItems([...menuItems, addedItem]);
+    setNewItem({
+      name: "",
+      description: "",
+      price: 0,
+      category: "",
+      image: "",
+      rating: 0,
+      votes: 0,
+      isVegetarian: false,
+      isSpicy: false,
+      isAvailable: true,
+    });
+    setIsAddDialogOpen(false);
+
+    toast({
+      title: "Success",
+      description: "Menu item added successfully!",
+    });
+  } else {
     toast({
       title: "Error",
-      description: err.response?.data?.error || "Server error",
+      description: response.data.error || "Failed to add item",
       variant: "destructive",
     });
   }
+} catch (error: any) {
+  toast({
+    title: "Error",
+    description: error.message || "Something went wrong",
+    variant: "destructive",
+  });
+}
+
 };
 
   const handleDeleteItem = (id: string) => {
