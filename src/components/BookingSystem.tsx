@@ -82,7 +82,7 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
 
   const apiURL = type === 'table'
     ? 'http://localhost/restaurant/book_table.php'
-    : 'http://localhost/restaurant/api/game-booking.php';
+    : 'http://localhost/restaurant/game-booking.php';
 
   const postData = type === 'table'
     ? {

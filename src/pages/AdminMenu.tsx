@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 interface MenuItem {
   id: string;
@@ -87,38 +88,71 @@ const AdminMenu = () => {
 
   const categories = ['Appetizers', 'Salads', 'Main Course', 'Desserts', 'Beverages'];
 
-  const handleAddItem = () => {
-    if (!newItem.name || !newItem.description || !newItem.category) {
+  const handleAddItem = async () => {
+  if (!newItem.name || !newItem.description || !newItem.category) {
+    toast({
+      title: "Error",
+      description: "Please fill in all required fields",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+  const token = localStorage.getItem("token"); 
+
+const response = await axios.post('http://localhost/restaurant/add_menu_item.php', {
+  name: newItem.name,
+  description: newItem.description,
+  price: newItem.price,
+  category: newItem.category,
+  image_url: newItem.image,
+  isAvailable: newItem.isAvailable
+}, {
+  headers: {
+    // 'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`
+  }
+});
+
+
+    if (response.data.success) {
+      const addedItem: MenuItem = {
+        id: Date.now().toString(), // Replace with real ID if backend returns it
+        ...newItem,
+        rating: 0
+      };
+
+      setMenuItems([...menuItems, addedItem]);
+      setNewItem({
+        name: '',
+        description: '',
+        price: 0,
+        category: '',
+        image: '',
+        isAvailable: true
+      });
+      setIsAddDialogOpen(false);
+
+      toast({
+        title: "Success",
+        description: "Menu item added successfully!",
+      });
+    } else {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: response.data.error || "Failed to add item",
         variant: "destructive",
       });
-      return;
     }
-
-    const item: MenuItem = {
-      id: Date.now().toString(),
-      ...newItem,
-      rating: 0,
-    };
-
-    setMenuItems([...menuItems, item]);
-    setNewItem({
-      name: '',
-      description: '',
-      price: 0,
-      category: '',
-      image: '',
-      isAvailable: true
-    });
-    setIsAddDialogOpen(false);
-
+  } catch (err: any) {
     toast({
-      title: "Success",
-      description: "Menu item added successfully!",
+      title: "Error",
+      description: err.response?.data?.error || "Server error",
+      variant: "destructive",
     });
-  };
+  }
+};
 
   const handleDeleteItem = (id: string) => {
     setMenuItems(menuItems.filter(item => item.id !== id));
