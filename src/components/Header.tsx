@@ -41,9 +41,9 @@ export const Header = () => {
           <nav className="hidden md:flex items-center space-x-1">
             {navigation.map((item) => (
               <Link key={item.name} to={item.href}>
-                <Button variant="ghost" className="text-foreground hover:text-primary">
-                  {item.icon && <item.icon className="w-4 h-4 mr-2" />}
-                  {item.name}
+                <Button variant="ghost" className="text-foreground hover:text-red">
+                 {item.icon && <item.icon className="w-4 h-4 mr-2" />}
+                 {item.name}
                 </Button>
               </Link>
             ))}
@@ -52,7 +52,7 @@ export const Header = () => {
               <div className="flex items-center space-x-1 ml-4 border-l pl-4">
                 {userNavigation.map((item) => (
                   <Link key={item.name} to={item.href}>
-                    <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
+                    <Button variant="ghost" size="sm" className="text-foreground hover:text-red">
                       <item.icon className="w-4 h-4 mr-2" />
                       {item.name}
                     </Button>
@@ -61,14 +61,14 @@ export const Header = () => {
                 
                 {user?.isAdmin && adminNavigation.map((item) => (
                   <Link key={item.name} to={item.href}>
-                    <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
+                    <Button variant="ghost" size="sm" className="text-foreground hover:text-red">
                       <item.icon className="w-4 h-4 mr-2" />
                       {item.name}
                     </Button>
                   </Link>
                 ))}
                 
-                <Button variant="ghost" size="sm" onClick={logout} className="text-foreground hover:text-primary">
+                <Button variant="ghost" size="sm" onClick={logout} className="text-foreground hover:text-red">
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </Button>

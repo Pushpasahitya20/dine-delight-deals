@@ -103,36 +103,44 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
         discount: `${discount}%`
       };
 
-  try {
-    const response = await axios.post(apiURL, postData);
-    if (response.data.success) {
-      toast({
-        title: "Booking Confirmed!",
-        description: `Your ${bookingType} booking for ${selectedDate} at ${selectedTime} has been confirmed${discount > 0 ? ` with ${discount}% discount!` : '!'}`,
-        variant: "default"
-      });
+ try {
+  const token = localStorage.getItem('token');
 
-      // Reset form
-      setSelectedDate('');
-      setSelectedTime('');
-      setGuests('2');
-      setName('');
-      setEmail('');
-    } else {
-      toast({
-        title: "Booking Failed",
-        description: response.data.message || "Something went wrong.",
-        variant: "destructive"
-      });
-    }
-  } catch (error) {
+  const response = await axios.post(apiURL, postData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (response.data.success) {
     toast({
-      title: "Server Error",
-      description: "Failed to submit booking. Please try again later.",
+      title: "Booking Confirmed!",
+      description: `Your ${bookingType} booking for ${selectedDate} at ${selectedTime} has been confirmed${discount > 0 ? ` with ${discount}% discount!` : '!'}`,
+      variant: "default"
+    });
+
+    // Reset form
+    setSelectedDate('');
+    setSelectedTime('');
+    setGuests('2');
+    setName('');
+    setEmail('');
+  } else {
+    toast({
+      title: "Booking Failed",
+      description: response.data.message || "Something went wrong.",
       variant: "destructive"
     });
-    console.error("API Error:", error);
   }
+} catch (error) {
+  toast({
+    title: "Server Error",
+    description: "Failed to submit booking. Please try again later.",
+    variant: "destructive"
+  });
+  console.error("API Error:", error);
+}
+
 };
 
 
@@ -144,7 +152,8 @@ export const BookingSystem = ({ type, gameType }: BookingSystemProps) => {
     full_name: name,
     email,
     discount: discount.toString(), // Optional, convert to string for PHP safety
-    table_id: tableId
+    table_id: tableId,
+     type: "table"
   };
 
   try {

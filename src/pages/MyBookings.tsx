@@ -1,47 +1,47 @@
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/Header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Users, Gamepad2 } from 'lucide-react';
+import axios from 'axios';
 
 const MyBookings = () => {
   const { user, isAuthenticated } = useAuth();
+  const [bookings, setBookings] = useState([]);
 
-  // Mock bookings data - replace with your backend integration
-  const mockBookings = [
-    {
-      id: 1,
-      type: 'table',
-      date: '2024-01-15',
-      time: '19:00',
-      guests: 4,
-      status: 'confirmed',
-      discount: 10,
-      details: 'Table for 4 people'
-    },
-    {
-      id: 2,
-      type: 'game',
-      game: 'Table Tennis',
-      date: '2024-01-16',
-      time: '14:00',
-      duration: 2,
-      status: 'confirmed',
-      discount: 20,
-      details: 'Day time booking'
-    },
-    {
-      id: 3,
-      type: 'table',
-      date: '2024-01-20',
-      time: '20:30',
-      guests: 2,
-      status: 'pending',
-      discount: 0,
-      details: 'Romantic dinner for 2'
-    }
-  ];
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await axios.get('http://localhost/restaurant/get_user_bookings.php', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setBookings(response.data.bookings);
+          console.log("response.data.bookings",response.data.bookings)
+        } else {
+          console.error('Failed to fetch bookings:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   if (!isAuthenticated) {
     return (
@@ -88,7 +88,7 @@ const MyBookings = () => {
           </div>
 
           <div className="grid gap-6">
-            {mockBookings.map((booking) => (
+            {bookings.map((booking: any) => (
               <Card key={booking.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -98,39 +98,39 @@ const MyBookings = () => {
                       ) : (
                         <Gamepad2 className="w-5 h-5" />
                       )}
-                      {booking.type === 'table' ? 'Table Booking' : `${booking.game} Booking`}
+                      {booking.type === 'table' ? 'Table Booking' : `${booking.game || 'Game'} Booking`}
                     </CardTitle>
-                    <Badge className={`${getStatusColor(booking.status)} text-white`}>
-                      {booking.status}
+                    <Badge className={`${getStatusColor(booking.status || 'confirmed')} text-white`}>
+                      {booking.status || 'confirmed'}
                     </Badge>
                   </div>
-                  <CardDescription>{booking.details}</CardDescription>
+                  <CardDescription>{booking.details || 'Enjoy your booking!'}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{booking.date}</span>
+                      <span className="text-sm">{booking.booking_date}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{booking.time}</span>
+                      <span className="text-sm">{booking.booking_time}</span>
                     </div>
-                    {booking.type === 'table' && (
+                    {booking.guests && (
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{booking.guests} guests</span>
                       </div>
                     )}
-                    {booking.discount > 0 && (
+                    {booking.discount && (
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className="bg-green-100 text-green-800">
-                          {booking.discount}% OFF
+                          {booking.discount}
                         </Badge>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex gap-2 mt-4">
                     {booking.status === 'pending' && (
                       <>
@@ -147,7 +147,7 @@ const MyBookings = () => {
             ))}
           </div>
 
-          {mockBookings.length === 0 && (
+          {bookings.length === 0 && (
             <Card>
               <CardContent className="text-center py-12">
                 <p className="text-muted-foreground mb-4">You have no bookings yet.</p>
