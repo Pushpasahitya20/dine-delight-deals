@@ -9,8 +9,16 @@ import { useCart } from '@/contexts/CartContext';
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { getTotalItems } = useCart();
-  const cartItemCount = getTotalItems();
+  
+  // Add defensive check for cart context
+  let cartItemCount = 0;
+  try {
+    const { getTotalItems } = useCart();
+    cartItemCount = getTotalItems();
+  } catch (error) {
+    console.error('Cart context not available in Header:', error);
+    // Fallback to 0 if cart context is not available
+  }
 
   const navigation = [
     { name: 'Home', href: '/', icon: null },

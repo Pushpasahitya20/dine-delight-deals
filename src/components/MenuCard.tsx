@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { StarRating } from './StarRating';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useCart } from '@/contexts/CartContext';
+import { useCart, type CartItem } from '@/contexts/CartContext';
 
 interface MenuItem {
   id: string;
@@ -29,7 +29,16 @@ export const MenuCard = ({ item, onRatingChange }: MenuCardProps) => {
   const [userRating, setUserRating] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
-  const { addToCart } = useCart();
+  
+  // Add defensive check for cart context
+  let addToCart: ((item: Omit<CartItem, 'quantity'>) => void) | null = null;
+  try {
+    const cartContext = useCart();
+    addToCart = cartContext.addToCart;
+  } catch (error) {
+    console.error('Cart context not available in MenuCard:', error);
+    // Component will still render but Add to Cart will show an error
+  }
 
   const handleRating = (rating: number) => {
     setUserRating(rating);
@@ -44,6 +53,15 @@ export const MenuCard = ({ item, onRatingChange }: MenuCardProps) => {
   };
 
   const handleAddToCart = () => {
+    if (!addToCart) {
+      toast({
+        title: "Error",
+        description: "Cart is not available. Please refresh the page.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     addToCart({
       id: item.id,
       name: item.name,

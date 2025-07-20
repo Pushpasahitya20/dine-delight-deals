@@ -25,7 +25,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
+  console.log('useCart called, context exists:', !!context);
   if (!context) {
+    console.error('useCart must be used within a CartProvider - context is undefined');
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
@@ -37,6 +39,8 @@ interface CartProviderProps {
 
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  
+  console.log('CartProvider rendered with items:', items.length);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
