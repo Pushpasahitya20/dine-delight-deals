@@ -64,6 +64,18 @@ const MyBookings = () => {
     );
   }
 
+  const getBookingStatus = (booking: any) => {
+    const today = new Date();
+    const bookingDate = new Date(booking.booking_date);
+    
+    // If booking date has passed, mark as completed
+    if (bookingDate < today && booking.status === 'confirmed') {
+      return 'completed';
+    }
+    
+    return booking.status || 'confirmed';
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -72,6 +84,8 @@ const MyBookings = () => {
         return 'bg-yellow-500';
       case 'cancelled':
         return 'bg-red-500';
+      case 'completed':
+        return 'bg-blue-500';
       default:
         return 'bg-gray-500';
     }
@@ -100,8 +114,8 @@ const MyBookings = () => {
                       )}
                       {booking.type === 'table' ? 'Table Booking' : `${booking.game || 'Game'} Booking`}
                     </CardTitle>
-                    <Badge className={`${getStatusColor(booking.status || 'confirmed')} text-white`}>
-                      {booking.status || 'confirmed'}
+                    <Badge className={`${getStatusColor(getBookingStatus(booking))} text-white`}>
+                      {getBookingStatus(booking)}
                     </Badge>
                   </div>
                   <CardDescription>{booking.details || 'Enjoy your booking!'}</CardDescription>
@@ -132,14 +146,17 @@ const MyBookings = () => {
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    {booking.status === 'pending' && (
+                    {getBookingStatus(booking) === 'pending' && (
                       <>
                         <Button variant="outline" size="sm">Modify</Button>
                         <Button variant="destructive" size="sm">Cancel</Button>
                       </>
                     )}
-                    {booking.status === 'confirmed' && (
+                    {getBookingStatus(booking) === 'confirmed' && (
                       <Button variant="outline" size="sm">View Details</Button>
+                    )}
+                    {getBookingStatus(booking) === 'completed' && (
+                      <Button variant="outline" size="sm">View Receipt</Button>
                     )}
                   </div>
                 </CardContent>

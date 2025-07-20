@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { StarRating } from './StarRating';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/contexts/CartContext';
 
 interface MenuItem {
   id: string;
@@ -28,6 +29,7 @@ export const MenuCard = ({ item, onRatingChange }: MenuCardProps) => {
   const [userRating, setUserRating] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
   const handleRating = (rating: number) => {
     setUserRating(rating);
@@ -42,6 +44,15 @@ export const MenuCard = ({ item, onRatingChange }: MenuCardProps) => {
   };
 
   const handleAddToCart = () => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      description: item.description,
+      isVegetarian: item.isVegetarian,
+      isSpicy: item.isSpicy
+    });
     toast({
       title: "Added to Cart",
       description: `${item.name} has been added to your cart!`,

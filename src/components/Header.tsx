@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Clock, Star, Calendar, Gamepad2, User, BookOpen, UtensilsCrossed, LogOut } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Menu, X, Clock, Star, Calendar, Gamepad2, User, BookOpen, UtensilsCrossed, LogOut, ShoppingCart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const { getTotalItems } = useCart();
+  const cartItemCount = getTotalItems();
 
   const navigation = [
     { name: 'Home', href: '/', icon: null },
@@ -17,6 +21,7 @@ export const Header = () => {
   ];
 
   const userNavigation = [
+    { name: 'Cart', href: '/cart', icon: ShoppingCart },
     { name: 'My Bookings', href: '/my-bookings', icon: BookOpen },
     { name: 'My Orders', href: '/orders', icon: UtensilsCrossed },
   ];
@@ -52,9 +57,14 @@ export const Header = () => {
               <div className="flex items-center space-x-1 ml-4 border-l pl-4">
                 {userNavigation.map((item) => (
                   <Link key={item.name} to={item.href}>
-                    <Button variant="ghost" size="sm" className="text-foreground hover:text-red">
+                    <Button variant="ghost" size="sm" className="text-foreground hover:text-red relative">
                       <item.icon className="w-4 h-4 mr-2" />
                       {item.name}
+                      {item.name === 'Cart' && cartItemCount > 0 && (
+                        <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs bg-destructive text-destructive-foreground">
+                          {cartItemCount}
+                        </Badge>
+                      )}
                     </Button>
                   </Link>
                 ))}
