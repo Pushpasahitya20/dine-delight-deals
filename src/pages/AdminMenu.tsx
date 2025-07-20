@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2 } from 'lucide-react';
@@ -19,8 +20,11 @@ interface MenuItem {
   description: string;
   price: number;
   category: string;
-  image: string;
+  image?: string;
   rating: number;
+  votes: number;
+  isVegetarian?: boolean;
+  isSpicy?: boolean;
   isAvailable: boolean;
 }
 
@@ -40,6 +44,9 @@ const AdminMenu = () => {
       category: 'Main Course',
       image: '/api/placeholder/300/200',
       rating: 4.5,
+      votes: 120,
+      isVegetarian: false,
+      isSpicy: false,
       isAvailable: true
     },
     {
@@ -50,6 +57,9 @@ const AdminMenu = () => {
       category: 'Salads',
       image: '/api/placeholder/300/200',
       rating: 4.2,
+      votes: 85,
+      isVegetarian: true,
+      isSpicy: false,
       isAvailable: true
     }
   ]);
@@ -60,6 +70,10 @@ const AdminMenu = () => {
     price: 0,
     category: '',
     image: '',
+    rating: 0,
+    votes: 0,
+    isVegetarian: false,
+    isSpicy: false,
     isAvailable: true
   });
 
@@ -130,6 +144,10 @@ const response = await axios.post('http://localhost/restaurant/add_menu_item.php
         price: 0,
         category: '',
         image: '',
+        rating: 0,
+        votes: 0,
+        isVegetarian: false,
+        isSpicy: false,
         isAvailable: true
       });
       setIsAddDialogOpen(false);
@@ -243,6 +261,50 @@ const response = await axios.post('http://localhost/restaurant/add_menu_item.php
                       onChange={(e) => setNewItem({...newItem, image: e.target.value})}
                       placeholder="Enter image URL"
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="rating">Rating (0-5)</Label>
+                      <Input
+                        id="rating"
+                        type="number"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        value={newItem.rating}
+                        onChange={(e) => setNewItem({...newItem, rating: parseFloat(e.target.value) || 0})}
+                        placeholder="0.0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="votes">Votes</Label>
+                      <Input
+                        id="votes"
+                        type="number"
+                        min="0"
+                        value={newItem.votes}
+                        onChange={(e) => setNewItem({...newItem, votes: parseInt(e.target.value) || 0})}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="vegetarian"
+                        checked={newItem.isVegetarian}
+                        onCheckedChange={(checked) => setNewItem({...newItem, isVegetarian: !!checked})}
+                      />
+                      <Label htmlFor="vegetarian">Vegetarian</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="spicy"
+                        checked={newItem.isSpicy}
+                        onCheckedChange={(checked) => setNewItem({...newItem, isSpicy: !!checked})}
+                      />
+                      <Label htmlFor="spicy">Spicy</Label>
+                    </div>
                   </div>
                   <Button onClick={handleAddItem} className="w-full">
                     Add Item
